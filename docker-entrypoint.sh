@@ -2,7 +2,7 @@
 
 postgres_ready() {
 	echo "Checking postgres at ${PGHOST}"
-	python /docker/postgres_ready.py
+	python3 /docker/postgres_ready.py
 }
 
 until postgres_ready; do
@@ -12,8 +12,8 @@ done
 
 >&2 echo "Postgres is up - continuing..."
 
-python manage.py migrate
-python /docker/create_admin.py
+python3 manage.py migrate
+python3 /docker/create_admin.py
 
 # Start Gunicorn processes
 echo Starting Gunicorn.
