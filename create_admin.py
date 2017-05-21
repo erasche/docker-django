@@ -5,7 +5,7 @@ sys.path.append(os.getcwd())
 import django
 django.setup()
 from django.contrib.auth.models import User
-password  = "".join([random.SystemRandom().choice(string.digits + string.letters) for i in range(32)])
+password  = "".join([random.SystemRandom().choice(string.digits + string.ascii_letters) for i in range(32)])
 
 try:
 	u = User.objects.create_superuser('admin', 'admin@localhost', password)
