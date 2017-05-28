@@ -26,7 +26,7 @@ done
 echo Starting Gunicorn.
 gunicorn ${DJANGO_WSGI_MODULE}:application \
 	--log-level ${GUNICORN_LOG_LEVEL:-info} \
-	--bind unix:/tmp/gunicorn.sock \
+	--bind 0.0.0.0:8000 \
 	--workers ${DJANGO_WORKERS:-4} \
 	"$@" &
 
