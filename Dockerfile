@@ -16,6 +16,7 @@ ENV DJANGO_WSGI_MODULE=base.wsgi \
 	DJANGO_SETTINGS_MODULE=base.production \
 	ALLOWED_HOSTS="*" \
 	CORS_ORIGINS="localhost:10000"
+RUN mkdir -p /docker/docker-entrypoint.d/
 
 EXPOSE 8000
 ENTRYPOINT ["/docker/docker-entrypoint.sh"]

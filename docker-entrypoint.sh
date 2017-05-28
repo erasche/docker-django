@@ -15,6 +15,13 @@ done
 python3 manage.py migrate
 python3 /docker/create_admin.py
 
+for f in /docker/docker-entrypoint.d/*; do
+	case "$f" in
+		*.sh)     echo "$0: running $f"; . "$f" ;;
+		*)        echo "$0: ignoring $f" ;;
+	esac
+done
+
 # Start Gunicorn processes
 echo Starting Gunicorn.
 gunicorn ${DJANGO_WSGI_MODULE}:application \
