@@ -26,6 +26,9 @@ done
 echo Starting Gunicorn.
 gunicorn ${DJANGO_WSGI_MODULE}:application \
 	--log-level ${GUNICORN_LOG_LEVEL:-info} \
-	--bind 0.0.0.0:8000 \
+	--bind unix:/tmp/gunicorn.sock \
 	--workers ${DJANGO_WORKERS:-4} \
-	"$@"
+	"$@" &
+
+nginx -t;
+nginx -g 'daemon off;'
