@@ -1,0 +1,42 @@
+version: "3"
+
+volumes:
+    app_static: 
+
+services:
+    proxy:
+        build: .
+        ports: 
+            - 8080:80
+        volumes:
+          - app_static:/staticfiles
+        links:
+            - app:backend
+        environment:
+            BACKEND_PORT: 8000
+            PATH_PREFIX_STATIC: /app/static
+            PATH_PREFIX: /app
+
+    app:
+        restart: always
+        image: quay.io/erasche/galactic-radio-telescope:latest
+        ports:
+          - 8000:8000
+        links:
+          - db
+        environment:
+          DJANGO_DEBUG: 'False'
+          DJANGO_ALLOWED_HOSTS: '*'
+          DJANGO_URL_PREFIX: 'app/'
+          RAVEN_DSN: 'https://4825a895601d4e4aa99d4107c9b8658b:bec9f46944394f679cebc89809512cbd@sentry.denbi.uni-freiburg.de/3'
+        volumes:
+          - ./app_uploads:/app/uploads/
+          - app_static:/app/static/
+
+    db:
+        restart: always
+        image: postgres:9.5
+        volumes:
+          - /data/pg_data:/var/lib/postgresql/data/
+        environment:
+          POSTGRES_PASSWORD: postgres
