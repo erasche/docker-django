@@ -12,7 +12,7 @@ RUN apk update && \
 ADD ./proxy.conf /etc/nginx/conf.d/server.tmpl
 
 ENV BACKEND_PORT=8000 \
-	PATH_PREFFIX_STATIC=/app/static \
+	PATH_PREFIX_STATIC=/app/static \
 	PATH_PREFIX=/app
 
 VOLUME ["/staticfiles"]
