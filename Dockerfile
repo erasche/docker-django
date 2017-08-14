@@ -1,24 +1,20 @@
-FROM python:2.7-alpine
+FROM nginx:1.12-alpine
 
-# Update the default application repository sources list
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apk update && \
-	apk add postgresql-dev gcc python-dev musl-dev bash postgresql-client git nginx && \
-	pip install psycopg2 gunicorn raven
+	apk add curl tar && \
+	curl -L https://github.com/jwilder/dockerize/releases/download/v0.2.0/dockerize-linux-amd64-v0.2.0.tar.gz > /dockerize-linux-amd64-v0.2.0.tar.gz && \
+	tar -C /usr/local/bin -xzvf dockerize-linux-amd64-v0.2.0.tar.gz && \
+	rm dockerize-linux-amd64-v0.2.0.tar.gz
 
-WORKDIR /app
-RUN addgroup -S django && \
-	adduser -S -G django django && \
-	mkdir /docker
+# Add a default proxy conf
+ADD ./proxy.conf /etc/nginx/conf.d/server.tmpl
 
-ADD create_admin.py postgres_ready.py docker-entrypoint.sh /docker/
+ENV BACKEND_PORT=8000 \
+	PATH_PREFFIX_STATIC=/app/static \
+	PATH_PREFIX=/app
 
-ENV DJANGO_WSGI_MODULE=base.wsgi \
-	DJANGO_SETTINGS_MODULE=base.production \
-	ALLOWED_HOSTS="*" \
-	CORS_ORIGINS="localhost:10000"
-RUN mkdir -p /docker/docker-entrypoint.d/
+VOLUME ["/staticfiles"]
 
-ADD nginx.conf /etc/nginx/nginx.conf
-
-EXPOSE 80
-ENTRYPOINT ["/docker/docker-entrypoint.sh"]
+CMD ["dockerize", "-template", "/etc/nginx/conf.d/server.tmpl:/etc/nginx/conf.d/default.conf", "nginx", "-g", "daemon off;"]
